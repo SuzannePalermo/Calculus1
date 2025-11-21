@@ -5,11 +5,11 @@
     <url>https://checkit.clontz.org</url>
     <outcomes>
         <outcome>
-            <title>Sample Outcome</title>
-            <slug>EX1</slug>
-            <path>outcomes/EX1</path>
+            <title>Limits of Functions</title>
+            <slug>L1</slug>
+            <path>outcomes/L1</path>
             <description>
-Simplify the sum of two monomials.
+Evaluate the limits, if they exist.
             </description>
         </outcome>
         <outcome>
