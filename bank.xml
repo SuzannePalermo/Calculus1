@@ -13,6 +13,14 @@ Evaluate the limits, if they exist.
             </description>
         </outcome>
         <outcome>
+            <title>Asymptotes and End Behavior</title>
+            <slug>L2</slug>
+            <path>outcomes/L2</path>
+            <description>
+Verify vertical asymptotes and determine end behavior and horizonatal asymptotes.
+            </description>
+        </outcome>
+        <outcome>
             <title>Sample Image Outcome</title>
             <slug>IMG1</slug>
             <path>outcomes/IMG1</path>

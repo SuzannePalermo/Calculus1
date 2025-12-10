@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<knowl mode="exercise" xmlns="https://spatext.clontz.org" version="0.2">
+    <knowl>
+        <content>
+            <!-- 1. Function Definition -->
+            <p>Consider the function <m>f(x)</m>:</p>
+            <p>
+                <me>
+                    f(x) = {{fx}}
+                </me>
+            </p>
+
+            <!-- 2. Task 1: Vertical Asymptote Question -->
+            <h3 class="font-bold mt-4">Task 1: Vertical Asymptote Verification</h3>
+            <p>Verify whether the vertical line <m>x={{a}}</m> is a vertical asymptote of <m>f(x)</m> by evaluating the following one-sided limits. Explain your reasoning.</p>
+
+
+            <!-- 3. Task 2: End Behavior/Horizontal Asymptotes Question -->
+            <h3 class="font-bold mt-4">Task 2: End Behavior and Horizontal Asymptotes</h3>
+            <p>Determine the end behavior of <m>f(x)</m> by evaluating the limits at infinity. State the equation(s) of any horizontal asymptotes (or state that none exist).</p>
+
+        </content>
+        
+        <outtro>
+            <h4 class="font-bold">Summary of Results</h4>
+            
+            <p>
+                <span class="font-bold">Task 1 Limits:</span>
+                <br/>
+                <m>\lim_{x \to {{a}}^+} f(x) = {{lim_plus}}</m>
+                <br/>
+                <m>\lim_{x \to {{a}}^-} f(x) = {{lim_minus}}</m>
+            </p>
+            
+            <p>
+                <span class="font-bold">Task 1 Conclusion:</span> Is <m>x={{a}}</m> a vertical asymptote?
+                <!-- The generator variable 'is_va_at_a' controls the output: Yes or No -->
+                {{#is_va_at_a}}
+                    <m>\text{Yes}</m>
+                {{/is_va_at_a}}
+                {{^is_va_at_a}}
+                    <m>\text{No}</m>
+                {{/is_va_at_a}}
+                <br/>
+                <span class="text-sm italic">
+                    (Note: A VA occurs if either one-sided limit is $\pm\infty$.)
+                </span>
+            </p>
+            
+            <p>
+                <span class="font-bold">Task 2 Limits:</span>
+                <br/>
+                <m>\lim_{x \to \infty} f(x) = {{lim_inf_plus}}</m>
+                <br/>
+                <m>\lim_{x \to -\infty} f(x) = {{lim_inf_minus}}</m>
+            </p>
+            
+            <p>
+                <span class="font-bold">Task 2 Conclusion:</span> Horizontal Asymptote(s) Equation(s):
+                <!-- The generator variable 'ha_equation' holds the final answer (e.g., y=3 or None) -->
+                <m>{{ha_equation}}</m> 
+            </p>
+        </outtro>
+    </knowl>
+</knowl>
