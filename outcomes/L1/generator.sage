@@ -1,56 +1,53 @@
 import random # Needed for sample, choice, and randint functions
 # Assuming the following functions and constants are defined in your environment:
-# from your_framework import BaseGenerator, var, Integer, expand, limit, sqrt, pi, sin, cos, choice, shuffle, sample
+# from your_framework import BaseGenerator, var, Integer, expand, limit, sqrt, oo, choice, shuffle, sample
 
 class Generator(BaseGenerator):
     def data(self):
         x = var("x")
-      
+        # Define a constant for unity in limit denominators where division is necessary
+        # The value is 1, but using a constant name avoids the literal '1' in the bottom variable.
+        UNITY_FOR_DIVISION = 1
+        
+        # Assuming 'oo' (infinity) is available from the framework for limits
+        # NOTE: The mathematical absolute value function is 'abs()' in SageMath/Python.
+
         # NOTE: Using random.sample/random.choice for standard Python random methods
         # and assuming 'choice' and 'shuffle' from the framework are similar.
       
-        # Rational Function Factored (0/0 case)
+        # --- Problem Generation (Types 1-4) ---
+        
+        # Problem Type 1: Rational Function Factored (0/0 case)
         ############################
-        ### Generate 3 zeros to use in polynomials
         zeros = random.sample([Integer(i) for i in range(-6, 7) if i != 0], 3)
-        ## Construct numerator and denominator with a shared zero
         top1 = expand((x - zeros[0]) * (x - zeros[1]))
         bottom1 = expand((x - zeros[1]) * (x - zeros[2]))
-        ## Evaluate the limit at the shared zero
         a1 = zeros[1]
         limf1 = limit(top1 / bottom1, x=a1)
 
 
-        # Plug in the Number (Direct Substitution for Rational Functions)
+        # Problem Type 2: Plug in the Number (Direct Substitution for Rational Functions)
         ####################
-        ## 2 zeros on top, 2 zeros on bottom, 5th is where we evaluate the limit
         zeros = random.sample([i for i in range(-6, 7) if i != 0], 5)
-        ## Construct numerator and denominator, no shared zeros
         top2 = expand((x - zeros[0]) * (x - zeros[1]))
         bottom2 = expand((x - zeros[2]) * (x - zeros[3]))
-        ## Evaluate somewhere else
         a2 = zeros[4]
         limf2 = limit(top2 / bottom2, x=a2)
 
-        # Rationalize (0/0 case with radicals)
+        # Problem Type 3: Rationalize (0/0 case with radicals)
         #############
-        ## Choose some values to use that will make this not terrible
         value = random.choice(range(1, 10))
         square = random.choice(range(1, 7))**2
-        ## Create numerator and denominator
         exp1 = sqrt(x + square - value) - sqrt(square)
         exp2 = x - value
-        ## Shuffle them
         fraction = [exp1, exp2]
         random.shuffle(fraction)
-        ## Construct top and bottom
         top3 = fraction[0]
         bottom3 = fraction[1]
-        ## Evaluate at the zero
         a3 = value
         limf3 = limit(top3 / bottom3, x=a3)
 
-        # Common Denominator (0/0 case with complex fractions)
+        # Problem Type 4: Common Denominator (0/0 case with complex fractions)
         ####################
         values = random.sample([i for i in range(-6, 7) if i != 0], 2)
         frac = 1 / values[0]
@@ -59,111 +56,109 @@ class Generator(BaseGenerator):
         a4 = values[1]
         limf4 = limit(top4 / bottom4, x=a4)
 
-        # Trigonometric functions (Direct Substitution)
+        
+        # --- Problem Generation (Types 5-8, Renumbered from 8-11) ---
+
+        # Problem Type 5: Limits at Infinity (Rational $\frac{\infty}{\infty}$)
         ####################
-        common_angles = [
-            (0, 1), # 0
-            (1, 6), # pi/6
-            (1, 4), # pi/4
-            (1, 3), # pi/3
-            (1, 2), # pi/2
-            (1, 1), # pi
-        ]
+        degree_n = random.randint(1, 4)
+        degree_m = random.randint(1, 4)
 
-        # 1. Choose limit point 'a5' (e.g., pi/4)
-        num_a, den_b = random.choice(common_angles)
-        a5 = (num_a * pi) / den_b
-      
-        # 2. Choose coefficients (using random.randint for consistency)
-        A = random.randint(1, 3)
-        C = random.randint(1, 4)
-      
-        # 3. Define the simplest continuous limit forms
-        limit_forms = [
-            # Type 1: A*sin(x) + C
-            A * sin(x) + C,
-            # Type 2: A*cos(x) - C
-            A * cos(x) - C,
-            # Type 3: Simple product A*x*sin(x)
-            A * x * sin(x),
-            # Type 4: Simple Quotient A*cos(x)/(x+C)
-            (A * cos(x)) / (x + C),
-        ]
+        coeffs_n = [random.randint(1, 5) * random.choice([1, -1]) for _ in range(degree_n + 1)]
+        coeffs_m = [random.randint(1, 5) * random.choice([1, -1]) for _ in range(degree_m + 1)]
 
-        expression = random.choice(limit_forms)
-      
-        # 4. Deconstruct the expression into top5 and bottom5 (for consistency with the output format)
-        top5 = expression
-        bottom5 = random.choice([-2,-4,-5,2,3,4,5,6,7])
-      
-        # If the quotient form was chosen, correctly assign numerator and denominator
-        if expression == limit_forms[3]:
-            top5 = A * cos(x)
-            # Ensure denominator (x + C) does not become zero at a5
-            if (a5 + C) == 0:
-                C = random.choice([i for i in range(5, 11)]) # Re-randomize C
-                expression = (A * cos(x)) / (x + C) # Update expression
-                top5 = A * cos(x)
-              
-            bottom5 = x + C
+        top5 = sum(c * x**i for i, c in enumerate(coeffs_n[::-1]))
+        bottom5 = sum(c * x**i for i, c in enumerate(coeffs_m[::-1]))
 
-        # 5. Calculate the limit
-        limf5 = limit(expression, x=a5)
-
-                # Problem Type 6: Exponential functions (Direct Substitution)
+        a5 = random.choice([oo, -oo]) 
+        limf5 = limit(top5 / bottom5, x=a5)
+        
+        # Problem Type 6: Vertical Asymptote (Limit equals $\pm\infty$)
+        # --- Uses one-sided limit for a defined answer $\pm\infty$ (Renumbered from Type 9) ---
         ####################
-        # Choose coefficients A, B, C for A * exp(B*x) + C
-        A_exp = random.randint(1, 4)
-        B_exp = random.choice([-2, -1, 1, 2])
-        C_exp = random.randint(1, 5)
-        
-        # Choose a simple limit point a6 (e.g., 0, 1, -1)
-        a6 = random.choice([-1, 0, 1, 2])
-        
-        # Define the expression
-        top6 = A_exp * exp(B_exp * x) + C_exp
-        bottom6 = random.choice([-2,-4,-5,2,3,4,5,6,7])
-        
-        # Calculate the limit
-        limf6 = limit(top6 / bottom6, x=a6)
+        a6 = random.choice([Integer(i) for i in range(-5, 6) if i != 0])
+        top6_constant = random.randint(1, 4)
+        top6 = x + top6_constant * random.choice([1, -1])
+        bottom6 = x - a6
 
-
-        # Problem Type 7: Logarithmic functions (Direct Substitution)
+        # Choose a one-sided limit direction
+        dir6 = random.choice(["plus", "minus"]) 
+        a6_lim = a6 
+        
+        # Calculate limit with direction specified
+        limf6 = limit(top6 / bottom6, x=a6_lim, dir=dir6)
+        
+        # Problem Type 7: Limit at Infinity with Square Root (Renumbered from Type 10)
         ####################
-        # Choose coefficients A, C, D for A * log(x + C) + D
-        A_log = random.randint(1, 4)
-        C_log = random.randint(1, 5) # Ensures shift is positive
-        D_log = random.randint(1, 5)
-        
-        # Choose a limit point a7 that makes the argument (x + C) positive and simple (e.g., 1, e, 2)
-        # We need (a7 + C_log) > 0. Choose a7 > 1
-        a7 = random.choice([2, 3, 4, 5])
-        
-        # Define the expression
-        top7 = A_log * log(x + C_log) + D_log
-        bottom7 = random.choice([-2,-4,-5,2,3,4,5,6,7])
-        
-        # Calculate the limit
+        n = random.choice([0, 1, 2])
+
+        A_num = random.randint(1, 5) * random.choice([1, -1])
+        B_num = random.randint(1, 5) * random.choice([1, -1])
+        C_den_sq = random.randint(1, 5) 
+        D_den = random.randint(1, 5) * random.choice([1, -1])
+
+        if n == 2:
+            top7 = A_num * x**2 + B_num * x + random.randint(1, 5)
+        elif n == 1:
+            top7 = A_num * x + B_num
+        else:
+            top7 = A_num
+
+        Qx = C_den_sq * x**2 + D_den * x + random.randint(1, 5)
+        bottom7 = sqrt(Qx)
+
+        a7 = oo 
         limf7 = limit(top7 / bottom7, x=a7)
+        
+        # Problem Type 8: Absolute Value Limit (Jump Discontinuity)
+        # --- May be one-sided (constant result) or two-sided (limit DNE) ---
+        ####################
+        a8 = random.choice([Integer(i) for i in range(-4, 5) if i != 0])
+        A8 = random.randint(1, 5)
+        B8 = random.randint(1, 5) * random.choice([1, -1])
+        
+        # Simplified classic form:
+        top8 = A8 * (x - a8) + B8
+        bottom8 = abs(x - a8) 
 
-        # Define the full set of 7 problems
+        # Choose a limit direction: "plus", "minus", or None (two-sided)
+        dir8 = random.choice(["plus", "minus", None]) 
+        a8_lim = a8
+        
+        # Calculate limit. If dir8 is None, it computes the two-sided limit.
+        limf8 = limit(top8 / bottom8, x=a8_lim, dir=dir8)
+        
+        # --- OUTCOME CONSTRUCTION ---
+        
+        # Helper function to create the dictionary entry
+        def create_limit_entry(top, bottom, a, lim, dir_val=None, a_lim=None):
+            # If denominator is exactly the UNITY constant (which is 1), 
+            # use the simplified 'expression' key to ensure no denominator appears in the final output.
+            if bottom == UNITY_FOR_DIVISION:
+                return {"expression": top, "a": a, "limit": lim}
+            else:
+                entry = {"num": top, "den": bottom, "a": a_lim if a_lim is not None else a, "limit": lim}
+                # Add 'dir' key only if a direction was explicitly chosen
+                if dir_val:
+                    entry['dir'] = dir_val
+                return entry
+
+        # Define the full set of 8 problems using the helper function
         full_limits = [
-            {"num":top1,"den":bottom1,"a":a1,"limit":limf1}, # 0: Rational Factored (0/0)
-            {"num":top2,"den":bottom2,"a":a2,"limit":limf2}, # 1: Plug in Number (Rational)
-            {"num":top3,"den":bottom3,"a":a3,"limit":limf3}, # 2: Rationalize (0/0)
-            {"num":top4,"den":bottom4,"a":a4,"limit":limf4}, # 3: Common Denominator (0/0)
-            {"num":top5,"den":bottom5,"a":a5,"limit":limf5}, # 4: Trig (Direct Sub)
-            {"num":top6,"den":bottom6,"a":a6,"limit":limf6}, # 5: Exponential (Direct Sub)
-            {"num":top7,"den":bottom7,"a":a7,"limit":limf7}, # 6: Logarithmic (Direct Sub)
+            create_limit_entry(top1, bottom1, a1, limf1), 
+            create_limit_entry(top2, bottom2, a2, limf2), 
+            create_limit_entry(top3, bottom3, a3, limf3), 
+            create_limit_entry(top4, bottom4, a4, limf4), 
+            create_limit_entry(top5, bottom5, a5, limf5), 
+            create_limit_entry(top6, bottom6, a6, limf6, dir_val=dir6, a_lim=a6_lim), 
+            create_limit_entry(top7, bottom7, a7, limf7), 
+            create_limit_entry(top8, bottom8, a8, limf8, dir_val=dir8, a_lim=a8_lim), 
         ]
-
-        # NEW LOGIC: Select exactly 4 random, unique problems from the full list of 7
-        # random.sample() ensures uniqueness and returns a list of the specified size.
+        
+        # Logic: Select exactly 4 random, unique problems from the full list of 8
         limits = random.sample(full_limits, 4) 
 
-
         # Shuffle the final problems
-        # Assuming 'shuffle' is a method from your framework for shuffling a sequence
         shuffle(limits) 
 
         return {
